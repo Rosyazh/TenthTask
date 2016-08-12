@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 /*
-Practice: Develop custom class Crew which implements IList<Worker>, +
+Practice: Develop custom class Crew which implements IList<Worker>, 
 Worker is a custom class containing personal info and his working position.
 Also implement EqualityComparer to sort workers by their working position.
 */
@@ -98,11 +98,11 @@ namespace TenthTask
 
         public void Sort()
         {
-            contents.Sort();
+            contents.Sort(new EqualityComparer());
         }
     }
 
-    class Worker: IComparable<Worker>
+    class Worker/*: IComparable<Worker>*/
     {
         public string Name { get; set; }
         public string Surname { get; set; }
@@ -112,11 +112,19 @@ namespace TenthTask
         {
             return string.Format("{0} {1} {2}", Name, Surname, WorkPosition);
         }
-
+        /*
         public int CompareTo(Worker other)
         {
             if (Equals(other)) return 0;
             return WorkPosition.CompareTo(other.WorkPosition);
+        }*/
+    }
+
+    class EqualityComparer : IComparer<Worker>
+    {
+        public int Compare(Worker x, Worker y)
+        {
+            return x.WorkPosition.CompareTo(y.WorkPosition);
         }
     }
 
@@ -127,17 +135,19 @@ namespace TenthTask
         Bookkeeper = 3
     }
 
+    /*
     class PositionComparer : EqualityComparer<Worker>
     {
         public override bool Equals(Worker x, Worker y)
         {
             return x.WorkPosition == y.WorkPosition;
         }
+
         public override int GetHashCode(Worker obj)
         {
             return (obj.WorkPosition).GetHashCode();
         }
-    }
+    }*/
 
     class Program
     {
@@ -147,41 +157,18 @@ namespace TenthTask
             crew.Add(new Worker { Name = "Petr", Surname = "Ivanov", WorkPosition = Position.Director });
             crew.Add(new Worker { Name = "Vika", Surname = "Klichko", WorkPosition = Position.Bookkeeper });
             crew.Add(new Worker { Name = "Kolya", Surname = "Vikulov", WorkPosition = Position.Manager });
-            
-            //sort by LINQ
+
+            //sort by IComparer
+            crew.Sort();
+            Console.WriteLine("Sort with IComparer:\n");
+            foreach (var worker in crew)
+                Console.WriteLine("{0} {1} {2}", worker.Name.PadRight(15), worker.Surname.PadRight(15), worker.WorkPosition);
+
+            /*//sort by LINQ
             var team = crew.OrderBy(n => n.WorkPosition);
             Console.WriteLine("Sort with LINQ:\n");
-            foreach(var worker in team)
-                Console.WriteLine(worker);
-
-            //sort by IComparable
-            crew.Sort();
-            Console.WriteLine("\nSort with IComparable:\n");
-            foreach(var worker in crew)
-                Console.WriteLine(worker);
-            
-            /*
-            Dictionary<int, string> pos = new Dictionary<int, string>();
-            pos[1] = "Director";
-            pos[2] = "Manager";
-            pos[3] = "Bookkeeper";
-            */
-            /*var eqComparer = new PositionComparer();
-            var d = new Dictionary<Worker, string>(eqComparer);
-            d[crew[0]] = "Director";
-            d[crew[1]] = "Manager";
-            d[crew[2]] = "Bookkeeper";
-
-            foreach (Worker c in d.Keys)
-            {
-                Console.WriteLine(c.ToString());
-            }*/
-
-            /*
-            foreach (Worker rab in crew)
-            {
-                Console.WriteLine("{0} {1} {2}", rab.Name.PadRight(15), rab.Surname.PadRight(15), rab.WorkPosition.ToString().PadRight(10));
-            }*/
+            foreach (var worker in team)
+                Console.WriteLine("{0} {1} {2}", worker.Name.PadRight(15), worker.Surname.PadRight(15), worker.WorkPosition);*/
         }
     }
 }
